@@ -11,7 +11,7 @@ jobs:
       run: docker build . --file Dockerfile --tag $IMAGE_NAME
     - uses: anchore/scan-action@v2
       with:
-        image: "graalvm-ce"
+        image: "graalvm-ce" 
         fail-build: false
         severity-cutoff: low
         debug: true
