@@ -11,14 +11,14 @@ jobs:
       run: docker build . --file Dockerfile --tag $IMAGE_NAME
     - uses: anchore/scan-action@v2
       with:
-        image: "graalvm-ce"
+        image: "graalvm-ce" 
         fail-build: false
         severity-cutoff: low
         debug: true
     - name: grype scan JSON results
       run: for j in `ls ./anchore-reports/*.json`; do echo "---- ${j} ----"; cat ${j}; echo; done
     - name: Log into registry
-      run: echo "${{ secrets.GHCR_GRAAL }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      run: echo "${{ secrets.GHCR }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
     - name: Push image
       run: |
         IMAGE_ID=ghcr.io/itarhri/$IMAGE_NAME
