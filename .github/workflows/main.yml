@@ -1,19 +1,37 @@
-name: Anchore Scan
+name: Container Scanning
 on: [push]
+env:
+  IMAGE_NAME: graalvm-ce
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - name: Docker Build
-      run: docker build . --file Dockerfile --tag testrepo/testimage:latest
-    - uses: anchore/scan-action@v1
+    - uses: actions/checkout@v2
+    - name: Build the container image
+      run: docker build . --file Dockerfile --tag itarhri/$IMAGE_NAME
+    - uses: anchore/scan-action@v2
       with:
-        image-reference: "testrepo/testimage:latest"
-        dockerfile-path: "./Dockerfile"
+        image: "itarhri/${{ IMAGE_NAME }}"
         fail-build: true
-    - name: Upload artifact
-      uses: actions/upload-artifact@v1.0.0
-      with:
-        name: AnchoreReports
-        path: ./anchore-reports/
+        severity-cutoff: low
+        debug: true
+    - name: grype scan JSON results
+      run: for j in `ls ./anchore-reports/*.json`; do echo "---- ${j} ----"; cat ${j}; echo; done
+    - name: Log into registry
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+    - name: Push image
+      run: |
+        IMAGE_ID=ghcr.io/itarhri/$IMAGE_NAME
+        # Change all uppercase to lowercase
+        IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+        # Strip git ref prefix from version
+        VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+        # Strip "v" prefix from tag name
+        [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+        # Use Docker `latest` tag convention
+        [ "$VERSION" == "main" ] && VERSION=latest
+          echo IMAGE_ID=$IMAGE_ID
+          echo VERSION=$VERSION
+          docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
+          docker push $IMAGE_ID:$VERSION
+          
