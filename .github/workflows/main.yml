@@ -12,7 +12,7 @@ jobs:
     - uses: anchore/scan-action@v2
       with:
         image: "graalvm-ce" 
-        fail-build: false
+        fail-build: true
         severity-cutoff: low
         debug: true
     - name: grype scan JSON results
