@@ -12,10 +12,11 @@ jobs:
     - uses: anchore/scan-action@v2
       with:
         image: "graalvm-ce" 
-        fail-build: false
+        fail-build: true
         severity-cutoff: low
         debug: true
     - name: grype scan JSON results
+      if: always()
       run: |
         ls -al
         for j in `ls vulnerabilities.json`; do echo "---- ${j} ----"; cat ${j}; echo; done
