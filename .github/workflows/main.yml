@@ -16,6 +16,7 @@ jobs:
         severity-cutoff: low
         debug: true
     - name: grype scan JSON results
+      if: always()
       run: |
         ls -al
         for j in `ls vulnerabilities.json`; do echo "---- ${j} ----"; cat ${j}; echo; done
