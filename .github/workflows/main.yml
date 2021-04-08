@@ -18,7 +18,7 @@ jobs:
     - name: grype scan JSON results
       run: |
         ls -al
-        for j in `ls ../anchore-reports/*.json`; do echo "---- ${j} ----"; cat ${j}; echo; done
+        for j in `ls vulnerabilities.json`; do echo "---- ${j} ----"; cat ${j}; echo; done
     - name: Log into registry
       run: echo "${{ secrets.GHCR }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
     - name: Push image
