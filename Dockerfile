@@ -1,9 +1,9 @@
-# LICENSE UPL 1.0 
+# LICENSE UPL 1.0
 #
 # Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
 #
 
-FROM oraclelinux:7-slim
+FROM alpine
 
 # Note: If you are behind a web proxy, set the build variables for the build:
 #       E.g.:  docker build --build-arg "https_proxy=..." --build-arg "http_proxy=..." --build-arg "no_proxy=..." ...
@@ -13,7 +13,9 @@ LABEL \
     org.opencontainers.image.title='GraalVM Community Edition' \
     org.opencontainers.image.authors='GraalVM Sustaining Team <graalvm-sustaining_ww_grp@oracle.com>' \
     org.opencontainers.image.description='GraalVM is a universal virtual machine for running applications written in JavaScript, Python, Ruby, R, JVM-based languages like Java, Scala, Clojure, Kotlin, and LLVM-based languages such as C and C++.'
-    
+
+RUN uname -m
+
 RUN yum update -y oraclelinux-release-el7 \
     && yum install -y oraclelinux-developer-release-el7 oracle-softwarecollection-release-el7 \
     && yum-config-manager --enable ol7_developer \
@@ -25,15 +27,18 @@ RUN yum update -y oraclelinux-release-el7 \
 
 RUN fc-cache -f -v
 
-ARG GRAALVM_VERSION=21.0.0
-ARG JAVA_VERSION=java8
-ARG GRAALVM_PKG=https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-$GRAALVM_VERSION/graalvm-ce-$JAVA_VERSION-linux-amd64-$GRAALVM_VERSION.tar.gz
+ARG GRAALVM_VERSION=21.1.0
+ARG JAVA_VERSION=java11
+ARG GRAALVM_PKG=https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-$GRAALVM_VERSION/graalvm-ce-$JAVA_VERSION-GRAALVM_ARCH-$GRAALVM_VERSION.tar.gz
+ARG TARGETPLATFORM
 
 ENV LANG=en_US.UTF-8 \
     JAVA_HOME=/opt/graalvm-ce-$JAVA_VERSION-$GRAALVM_VERSION/
 
 ADD gu-wrapper.sh /usr/local/bin/gu
 RUN set -eux \
+    && if [ "$TARGETPLATFORM" == "linux/amd64" ]; then GRAALVM_PKG=${GRAALVM_PKG/GRAALVM_ARCH/linux-amd64}; fi \
+    && if [ "$TARGETPLATFORM" == "linux/arm64" ]; then GRAALVM_PKG=${GRAALVM_PKG/GRAALVM_ARCH/linux-aarch64}; fi \
     && curl --fail --silent --location --retry 3 ${GRAALVM_PKG} \
     | gunzip | tar x -C /opt/ \
 
@@ -46,6 +51,7 @@ RUN set -eux \
         [ ! -e "/usr/bin/$base" ]; \
         alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
     done \
+
     && chmod +x /usr/local/bin/gu
 
 CMD java -version
