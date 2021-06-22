@@ -8,7 +8,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build the container image
-      run: docker build . --file Dockerfile --tag $IMAGE_NAME
+      run: docker build . --file Dockerfile --build-arg TARGETPLATFORM=linux/amd64 --tag $IMAGE_NAME
     - uses: anchore/scan-action@v2
       with:
         image: "graalvm-ce" 
