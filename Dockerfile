@@ -73,10 +73,5 @@ RUN alias alternatives='update-alternatives'
 
 ENV LD_LIBRARY_PATH=/usr/lib/ \
     PATH=$PATH:/opt/graalvm-ce-java$JAVA_VERSION-$GRAALVM_VERSION/bin/
-    
-RUN set -x && \
-  apk add --no-cache --update \
-    libc6-compat \
-    libstdc++
 
 CMD java -version
