@@ -18,15 +18,18 @@ RUN apk update \
     && apk add --no-cache bash dpkg curl bzip2-dev ed gcc build-base g++ gfortran gzip file fontconfig less libcurl curl-dev make openssl openssl-dev readline-dev tar vim which xz-dev zlib-dev \
     && apk add --no-cache glib-static llvm zlib-static
 
+# Install alpine-pkg-glibc https://github.com/sgerrand/alpine-pkg-glibc
 RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub && \
     wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.33-r0/glibc-2.33-r0.apk && \
     apk add glibc-2.33-r0.apk
 
+# Install glibc-i18n & localedef to generate locales https://github.com/sgerrand/alpine-pkg-glibc#locales
 RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.33-r0/glibc-bin-2.33-r0.apk && \
     wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.33-r0/glibc-i18n-2.33-r0.apk && \
     apk add glibc-bin-2.33-r0.apk glibc-i18n-2.33-r0.apk && \
     /usr/glibc-compat/bin/localedef -i en_US -f UTF-8 en_US.UTF-8
-
+    
+# Install libz package
 RUN wget "https://www.archlinux.org/packages/core/x86_64/zlib/download" -O /tmp/libz.tar.xz \
     && mkdir -p /tmp/libz \
     && tar -xf /tmp/libz.tar.xz -C /tmp/libz \
