@@ -16,7 +16,7 @@ LABEL \
     
 RUN apk update \
     && apk add --no-cache bash dpkg curl bzip2-dev ed gcc build-base g++ gfortran gzip file fontconfig less libcurl curl-dev make openssl openssl-dev readline-dev tar vim which xz-dev zlib-dev \
-    && apk add --no-cache glib-static llvm zlib-static \
+    && apk add --no-cache glib-static llvm zlib-static libstdc++6 \
     && apk -U add findutils
 
 # Install alpine-pkg-glibc https://github.com/sgerrand/alpine-pkg-glibc
