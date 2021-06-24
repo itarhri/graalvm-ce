@@ -15,7 +15,7 @@ LABEL \
     org.opencontainers.image.description='GraalVM is a universal virtual machine for running applications written in JavaScript, Python, Ruby, R, JVM-based languages like Java, Scala, Clojure, Kotlin, and LLVM-based languages such as C and C++.'
     
 RUN apk update \
-    && apk add --no-cache bash dpkg curl bzip2-dev ed gcc build-base g++ gfortran gzip file fontconfig less libcurl curl-dev make openssl openssl-dev readline-dev tar vim which xz-dev zlib-dev \
+    && apk add --no-cache bash dpkg curl bzip2-dev ed gcc build-base g++ gfortran gzip file fontconfig less libcurl curl-dev make openssl openssl-dev readline-dev tar vim which xz-dev \
     && apk add --no-cache glib-static llvm zlib-static libstdc++6 \
     && apk -U add findutils
 
