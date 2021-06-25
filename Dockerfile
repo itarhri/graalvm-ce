@@ -28,7 +28,8 @@ RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/s
 RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.33-r0/glibc-bin-2.33-r0.apk && \
     wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.33-r0/glibc-i18n-2.33-r0.apk && \
     apk add glibc-bin-2.33-r0.apk glibc-i18n-2.33-r0.apk && \
-    /usr/glibc-compat/bin/localedef -i en_US -f UTF-8 en_US.UTF-8
+    /usr/glibc-compat/bin/localedef -i en_US -f UTF-8 en_US.UTF-8 && \
+    echo "export LANG=en_US.UTF-8" > /etc/profile.d/locale.sh
     
 # Install libz package
 RUN wget "https://www.archlinux.org/packages/core/x86_64/zlib/download" -O /tmp/libz.tar.xz \
@@ -37,6 +38,12 @@ RUN wget "https://www.archlinux.org/packages/core/x86_64/zlib/download" -O /tmp/
     && cp /tmp/libz/usr/lib/libz.so.1.2.11 /usr/glibc-compat/lib \
     && /usr/glibc-compat/sbin/ldconfig \
     && rm -rf /tmp/libz /tmp/libz.tar.xz
+
+# Fix locales
+ENV MUSL_LOCPATH=/usr/local/share/i18n/locales/musl
+    && apk add --update git cmake make musl-dev gcc gettext-dev libintl \
+    && cd /tmp && git clone https://gitlab.com/rilian-la-te/musl-locales.git \
+    && cd /tmp/musl-locales && cmake . && make && make install
 
 RUN fc-cache -f -v
 
