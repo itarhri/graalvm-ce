@@ -41,7 +41,7 @@ RUN wget "https://www.archlinux.org/packages/core/x86_64/zlib/download" -O /tmp/
 
 # Fix locales
 ENV MUSL_LOCPATH=/usr/local/share/i18n/locales/musl
-    && apk add --update git cmake make musl-dev gcc gettext-dev libintl \
+RUN apk add --update git cmake make musl-dev gcc gettext-dev libintl \
     && cd /tmp && git clone https://gitlab.com/rilian-la-te/musl-locales.git \
     && cd /tmp/musl-locales && cmake . && make && make install
 
